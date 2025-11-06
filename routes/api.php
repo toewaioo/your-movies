@@ -79,7 +79,6 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 });
 
-// Public routes (if any)
 Route::get('public/movies', [MovieController::class, 'index']);
 Route::get('public/movies/{movie}', [MovieController::class, 'show']);
 Route::get('public/series', [SeriesController::class, 'index']);
