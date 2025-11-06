@@ -22,34 +22,32 @@ class DatabaseSeeder extends Seeder
         $this->clearDatabase();
 
         // Create basic data
-        $this->createUsers();
-        $this->createGenres();
-        $this->createTags();
-        $this->createActors();
-        $this->createMovies();
+        //$this->createUsers();
+        // $this->createGenres();
+        // $this->createTags();
+        // $this->createActors();
+        // $this->createMovies();
         $this->createSeries();
     }
 
     private function clearDatabase(): void
     {
-        DB::statement('SET FOREIGN_KEY_CHECKS=0');
 
-        DB::table('movie_actor')->truncate();
-        DB::table('series_actor')->truncate();
-        DB::table('movie_tag')->truncate();
-        DB::table('series_tag')->truncate();
-        DB::table('movie_genre')->truncate();
-        DB::table('series_genre')->truncate();
+        // DB::table('movie_actor')->truncate();
+        // DB::table('series_actor')->truncate();
+        // DB::table('movie_tag')->truncate();
+        // DB::table('series_tag')->truncate();
+        // DB::table('movie_genre')->truncate();
+        // DB::table('series_genre')->truncate();
 
-        Episode::truncate();
-        Movie::truncate();
-        Series::truncate();
-        Actor::truncate();
-        Tag::truncate();
-        Genre::truncate();
-        User::truncate();
-
-        DB::statement('SET FOREIGN_KEY_CHECKS=1');
+        // Episode::truncate();
+        // Movie::truncate();
+        // Series::truncate();
+        // Actor::truncate();
+        // Tag::truncate();
+        // Genre::truncate();
+        // User::truncate();
+        // $this->createUsers();
     }
 
     private function createUsers(): void

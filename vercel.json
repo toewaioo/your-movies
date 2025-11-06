@@ -1,0 +1,46 @@
+{
+    "version": 2,
+    "framework": null,
+    "builds": [
+        {
+            "src": "api/*.php",
+            "use": "vercel-php@0.7.3",
+            "config": {
+                "phpVersion": "8.3",
+                "extensions": ["pgsql", "pdo_pgsql", "curl"]
+            }
+        },
+        { "src": "/public/**", "use": "@vercel/static" }
+    ],
+
+    "routes": [
+        { "src": "/assets/(.*)", "dest": "public/assets/$1" },
+        { "src": "/js/(.*)", "dest": "public/js/$1" },
+        {
+            "src": "/(css|js)/(.*)",
+            "dest": "public/$1/$2"
+        },
+        {
+            "src": "/(.*)",
+            "dest": "/api/index.php"
+        }
+    ],
+    "outputDirectory": "public/build",
+    "env": {
+        "APP_NAME": "LuGyi",
+        "APP_ENV": "production",
+        "APP_DEBUG": "false",
+        "APP_KEY": "base64:7UNwXBE+ydXhViycaiuhKHE8kjDZOLgWD2i+ZkRmGoI=",
+        "APP_URL": "https://lugyi.vercel.app",
+        "VERCEL_DEMO_MODE": "true",
+        "APP_CONFIG_CACHE": "/tmp/config.php",
+        "APP_EVENTS_CACHE": "/tmp/events.php",
+        "APP_PACKAGES_CACHE": "/tmp/packages.php",
+        "APP_ROUTES_CACHE": "/tmp/routes.php",
+        "APP_SERVICES_CACHE": "/tmp/services.php",
+        "VIEW_COMPILED_PATH": "/tmp",
+        "CACHE_DRIVER": "array",
+        "LOG_CHANNEL": "stderr",
+        "SESSION_DRIVER": "cookie"
+    }
+}

@@ -10,9 +10,6 @@ use App\Models\Genre;
 use App\Models\Actor;
 use Inertia\Inertia as InertiaRender;
 use Illuminate\Support\Facades\Log;
-use App\Http\Controllers\TelegramWebhookController;
-
-Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handleWebhook']);
 
 Route::get('/', function () {
 
