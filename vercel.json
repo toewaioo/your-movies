@@ -10,7 +10,8 @@
                 "extensions": ["pgsql", "pdo_pgsql", "curl"]
             }
         },
-        { "src": "/public/**", "use": "@vercel/static" }
+        { "src": "/public/**", "use": "@vercel/static" },
+        { "src": "/public/build/**", "use": "@vercel/static" }
     ],
 
     "routes": [
