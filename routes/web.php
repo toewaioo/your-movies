@@ -11,6 +11,14 @@ use App\Models\Actor;
 use Inertia\Inertia as InertiaRender;
 use Illuminate\Support\Facades\Log;
 
+use App\Http\Controllers\EncryptPageController;
+use App\Http\Controllers\StreamController;
+
+Route::get('/encrypt', [EncryptPageController::class, 'index']);
+Route::post('/encrypt', [EncryptPageController::class, 'generate']);
+Route::get('/stream/{token}', [StreamController::class, 'stream']);
+
+
 Route::get('/', function () {
 
     $features = [
