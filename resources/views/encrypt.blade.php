@@ -3,53 +3,96 @@
 <head>
     <meta charset="UTF-8">
     <title>Secure URL Encryptor</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@3/dist/tailwind.min.css">
+
+    <!-- Tailwind CDN (remove if already included globally) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center">
+
+    <div class="w-full max-w-xl bg-white shadow-xl rounded-2xl p-8">
+
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">
+            🔐 Secure Streaming URL Generator
+        </h2>
+
+        <!-- Form -->
+        <form method="POST" action="/encrypt" class="space-y-4">
+            @csrf
+
+            <div>
+                <label class="block mb-1 font-semibold">Enter Real Video URL</label>
+                <input 
+                    type="text" 
+                    name="url"
+                    placeholder="https://example.com/video.mp4"
+                    required
+                    class="w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-blue-400"
+                >
+            </div>
+
+            <button
+                class="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-lg transition">
+                Generate Secure URL
+            </button>
+        </form>
+
+        @if(isset($secureUrl))
+        <hr class="my-8">
+
+        <div class="space-y-3">
+            <h3 class="font-bold text-lg text-gray-800">Secure Stream URL</h3>
+
+            <div class="flex gap-2">
+                <input 
+                    id="streamUrl" 
+                    type="text" 
+                    value="{{ $secureUrl }}" 
+                    class="flex-1 px-4 py-2 border rounded-lg bg-gray-50"
+                    readonly
+                >
+                <button 
+                    onclick="copyText('streamUrl')" 
+                    class="bg-gray-700 hover:bg-black text-white px-4 rounded-lg">
+                    Copy
+                </button>
+            </div>
+
+            <h3 class="font-bold text-lg text-gray-800 mt-4">Secure Download URL</h3>
+
+            @php
+                $token = basename($secureUrl);
+                $downloadUrl = url('/download/' . $token);
+            @endphp
+
+            <div class="flex gap-2">
+                <input 
+                    id="downloadUrl"
+                    type="text"
+                    value="{{ $downloadUrl }}"
+                    class="flex-1 px-4 py-2 border rounded-lg bg-gray-50"
+                    readonly
+                >
+                <button 
+                    onclick="copyText('downloadUrl')" 
+                    class="bg-gray-700 hover:bg-black text-white px-4 rounded-lg">
+                    Copy
+                </button>
+            </div>
+        </div>
+        @endif
+    </div>
 
     <script>
-        function copyLink() {
-            const text = document.getElementById("output");
-            navigator.clipboard.writeText(text.value);
-            alert("Copied!");
+        function copyText(id) {
+            const copyField = document.getElementById(id);
+            copyField.select();
+            copyField.setSelectionRange(0, 99999);
+            navigator.clipboard.writeText(copyField.value);
+
+            alert("Copied to clipboard!");
         }
     </script>
-</head>
-<body class="bg-gray-100">
-
-<div class="max-w-xl mx-auto mt-16 bg-white shadow-lg rounded-xl p-6">
-    <h2 class="text-2xl font-bold text-center mb-4 text-blue-600">
-        🔐 Secure Download Link Generator
-    </h2>
-
-    <form method="POST" action="{{ route('encrypt.process') }}">
-        @csrf
-
-        <!-- KEEP THE KEY SECURE -->
-        <input type="hidden" name="key" value="{{ $pageKey }}">
-
-        <label class="block mb-2 text-gray-700 font-semibold">Enter Original URL:</label>
-        <input type="text" name="url" required
-               class="w-full border rounded-lg p-3 focus:ring-blue-500 focus:border-blue-500"
-               placeholder="https://example.com/file.mp4">
-
-        <button class="mt-4 w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700">
-            Generate Secure Link
-        </button>
-    </form>
-
-    @isset($downloadUrl)
-        <div class="mt-6 p-4 bg-gray-50 rounded border">
-            <label class="block mb-2 text-gray-700 font-semibold">Encrypted Download URL:</label>
-            <input id="output" type="text" readonly value="{{ $downloadUrl }}"
-                   class="w-full border rounded p-2">
-
-            <button onclick="copyLink()"
-                    class="mt-2 w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">
-                Copy Link
-            </button>
-        </div>
-    @endisset
-
-</div>
 
 </body>
 </html>

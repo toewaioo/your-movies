@@ -1,6 +1,5 @@
 <?php
 
-use App\Helpers\SecureStream;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -17,6 +16,7 @@ use App\Http\Controllers\StreamController;
 
 use App\Http\Controllers\DownloadController;
 use Illuminate\Http\Request;
+Route::get('/download/{token}', [DownloadController::class, 'download']);
 
 Route::get('/encrypt', function (Request $request) {
     $validPassword = "kairizy"; // <<< change your password here
@@ -29,24 +29,8 @@ Route::get('/encrypt', function (Request $request) {
         'pageKey' => $request->key
     ]);
 })->name('encrypt.page');
-
-Route::post('/encrypt', function (Request $request) {
-    $validPassword = "kairizy";
-
-    if ($request->key !== $validPassword) {
-        abort(403, "Access Denied: Invalid key");
-    }
-
-    $url = $request->url;
-    $token = SecureStream::encryptUrl($url);
-    $downloadUrl = route('download.secure', $token);
-
-    return view('encrypt', [
-        'downloadUrl' => $downloadUrl,
-        'pageKey'     => $request->key
-    ]);
-})->name('encrypt.process');
-Route::get('/download/{token}', [DownloadController::class, 'download']);
+// Route::get('/encrypt', [EncryptPageController::class, 'index']);
+Route::post('/encrypt', [EncryptPageController::class, 'generate']);
 Route::get('/stream/{token}', [StreamController::class, 'stream']);
 
 
