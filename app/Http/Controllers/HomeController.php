@@ -75,7 +75,25 @@ class HomeController extends Controller
             'latestSeries' => $latestSeries,
             'genres' => $genres,
             'actors' => $actors,
-            
+            'seo' => [
+                'title' => 'Home',
+                'description' => env('APP_DESCRIPTION', 'Your Ultimate Movie & Series Destination - Stream and download the latest movies and TV series'),
+                'keywords' => env('APP_KEYWORDS', 'movies, series, streaming, download, cinema, tv shows'),
+                'url' => url('/'),
+                'image' => $featured->first()?->poster_url ?? url('/images/default-og.jpg'),
+                'structuredData' => [
+                    '@context' => 'https://schema.org',
+                    '@type' => 'WebSite',
+                    'name' => env('APP_NAME', 'Cineverse'),
+                    'url' => url('/'),
+                    'description' => env('APP_DESCRIPTION', 'Your Ultimate Movie & Series Destination'),
+                    'potentialAction' => [
+                        '@type' => 'SearchAction',
+                        'target' => url('/search?q={search_term_string}'),
+                        'query-input' => 'required name=search_term_string'
+                    ]
+                ]
+            ]
         ]);
     }
     public function search(Request $request): Response
