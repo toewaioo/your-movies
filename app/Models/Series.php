@@ -1,6 +1,5 @@
 <?php
 // app/Models/Series.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,81 +12,98 @@ class Series extends Model
 
     protected $fillable = [
         'title',
+        'original_title',
         'slug',
-        'synopsis',
+        'description',
+        'release_year_start',
+        'release_year_end',
         'status',
+        'language',
+        'country',
+        'imdb_id',
         'poster_url',
-        'backdrop_url',
-        'is_vip',
-        'is_featured',
-        'rating'
+        'banner_url',
+        'trailer_url',
+        'age_rating',
+        'is_vip_only',
+        'rating_average',
+        'rating_count',
+        'view_count'
     ];
 
     protected $casts = [
-        'is_vip' => 'boolean',
-        'is_featured' => 'boolean',
-        'rating' => 'float',
+        'is_vip_only' => 'boolean',
+        'rating_average' => 'decimal:1',
     ];
 
-
-
-    public function episodes()
+    // Relationships
+    public function genres()
     {
-        return $this->hasMany(Episode::class);
+        return $this->belongsToMany(Genre::class, 'genre_series');
+    }
+
+    public function seasons()
+    {
+        return $this->hasMany(Season::class);
+    }
+
+    public function persons()
+    {
+        return $this->hasMany(PersonRole::class);
     }
 
     public function actors()
     {
-        return $this->belongsToMany(Actor::class, 'series_actor') // Explicit table name
-            ->withPivot('character_name')
-            ->withTimestamps();
+        return $this->persons()->where('role_type', 'actor');
     }
 
-    public function tags()
+    public function directors()
     {
-        return $this->belongsToMany(Tag::class, 'series_tag') // Explicit table name
-            ->withTimestamps();
+        return $this->persons()->where('role_type', 'director');
     }
 
-    public function genres()
+    public function watchHistory()
     {
-        return $this->belongsToMany(Genre::class, 'series_genre') // Explicit table name
-            ->withTimestamps();
+        return $this->hasManyThrough(WatchHistory::class, Episode::class);
     }
 
-    public function scopeSearch($query, $search)
+    // Scopes
+    public function scopePublic($query)
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('title', 'like', "%{$search}%")
-                ->orWhere('synopsis', 'like', "%{$search}%");
-        });
+        return $query->where('visibility_status', 'public');
     }
 
-    public function scopeByStatus($query, $status)
+    public function scopeOngoing($query)
     {
-        return $query->where('status', $status);
+        return $query->where('status', 'ongoing');
     }
 
-    public function scopeVip($query, $isVip = true)
+    public function scopeEnded($query)
     {
-        return $query->where('is_vip', $isVip);
+        return $query->where('status', 'ended');
     }
 
-    public function getLatestEpisodeAttribute()
+    // Methods
+    public function getTotalEpisodesAttribute(): int
     {
-        return $this->episodes()->latest('release_date')->first();
+        return $this->seasons->sum('episode_count');
     }
-    // Optional: Group episodes by season
-    public function getSeasonsAttribute()
+
+    public function ratings()
     {
-        // Group episodes by season number
-        return $this->episodes->groupBy('season')->map(function ($episodes, $season) {
-            return [
-                'number' => $season,
-                'episodes' => $episodes->values(),
-                'id' => $season, // for React key
-                'episode_count' => $episodes->count(),
-            ];
-        })->values();
+        return $this->hasMany(Rating::class);
+    }
+
+    public function updateRatingStats(): void
+    {
+        $this->update([
+            'rating_average' => $this->ratings()->avg('rating') ?? 0,
+            'rating_count' => $this->ratings()->count(),
+        ]);
+    }
+
+    public function incrementViewCount(): void
+    {
+        $this->increment('view_count');
     }
 }

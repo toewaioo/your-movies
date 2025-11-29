@@ -1,6 +1,5 @@
 <?php
 // app/Models/Movie.php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -13,80 +12,137 @@ class Movie extends Model
 
     protected $fillable = [
         'title',
+        'original_title',
         'slug',
-        'synopsis',
+        'description',
         'release_date',
         'runtime',
-        'rating',
+        'language',
+        'country',
+        'imdb_id',
+        'budget',
+        'revenue',
+        'trailer_url',
         'poster_url',
-        'backdrop_url',
-        'links',
-        'is_vip',
-        'is_featured',
-        'views',
-        'director',
+        'banner_url',
+        'rating_average',
+        'rating_count',
+        'age_rating',
+        'is_vip_only',
+        'visibility_status',
+        'status',
+        'view_count'
     ];
 
     protected $casts = [
         'release_date' => 'date',
-        'links' => 'array',
-        'is_vip' => 'boolean',
-        'is_featured' => 'boolean',
-        'views' => 'integer',
+        'is_vip_only' => 'boolean',
+        'budget' => 'integer',
+        'revenue' => 'integer',
+        'rating_average' => 'decimal:1',
     ];
+
+    // Relationships
+    public function genres()
+    {
+        return $this->belongsToMany(Genre::class, 'genre_movie');
+    }
+
+    public function persons()
+    {
+        return $this->hasMany(PersonRole::class);
+    }
 
     public function actors()
     {
-        return $this->belongsToMany(Actor::class, 'movie_actor') // Explicit table name
-            ->withPivot('character_name')
-            ->withTimestamps();
+        return $this->persons()->where('role_type', 'actor');
     }
 
-    public function tags()
+    public function directors()
     {
-        return $this->belongsToMany(Tag::class, 'movie_tag') // Explicit table name
-            ->withTimestamps();
+        return $this->persons()->where('role_type', 'director');
     }
 
-    public function genres()
+    public function writers()
     {
-        return $this->belongsToMany(Genre::class, 'movie_genre') // Explicit table name
-            ->withTimestamps();
+        return $this->persons()->where('role_type', 'writer');
     }
 
-    public function scopeSearch($query, $search)
+    public function watchLinks()
     {
-        return $query->where(function ($q) use ($search) {
-            $q->where('title', 'like', "%{$search}%")
-                ->orWhere('synopsis', 'like', "%{$search}%")
-                ->orWhere('director', 'like', "%{$search}%");
-        });
+        return $this->hasMany(WatchLink::class);
     }
 
-    public function scopeVip($query, $isVip = true)
+    public function downloadLinks()
     {
-        return $query->where('is_vip', $isVip);
+        return $this->hasMany(DownloadLink::class);
     }
 
-    public function scopeReleasedAfter($query, $date)
+    public function ratings()
     {
-        return $query->where('release_date', '>=', $date);
+        return $this->hasMany(Rating::class);
     }
 
-    public function scopeReleasedBefore($query, $date)
+    // public function reviews()
+    // {
+    //     return $this->hasMany(Review::class);
+    // }
+
+    public function watchHistory()
     {
-        return $query->where('release_date', '<=', $date);
+        return $this->hasMany(WatchHistory::class);
     }
 
-    public function scopeByYear($query, $year)
+    // Scopes
+    public function scopePublic($query)
     {
-        return $query->whereYear('release_date', $year);
+        return $query->where('visibility_status', 'public');
     }
 
-    public function incrementViews()
+    public function scopeVipOnly($query)
     {
-        $this->timestamps = false;
-        $this->increment('views');
-        $this->timestamps = true;
+        return $query->where('is_vip_only', true);
+    }
+
+    public function scopeReleased($query)
+    {
+        return $query->where('status', 'released');
+    }
+
+    public function scopeUpcoming($query)
+    {
+        return $query->where('status', 'upcoming');
+    }
+
+    // Methods
+    public function updateRatingStats(): void
+    {
+        $this->update([
+            'rating_average' => $this->ratings()->avg('rating') ?? 0,
+            'rating_count' => $this->ratings()->count(),
+        ]);
+    }
+
+    public function getFormattedRuntimeAttribute(): string
+    {
+        $hours = floor($this->runtime / 60);
+        $minutes = $this->runtime % 60;
+
+        if ($hours > 0) {
+            return "{$hours}h {$minutes}m";
+        }
+
+        return "{$minutes}m";
+    }
+
+    public function incrementViewCount(): void
+    {
+        $this->increment('view_count');
+    }
+
+    public function addView(): void
+    {
+        $this->view_count++;
+        $this->save();
     }
 }
