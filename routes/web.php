@@ -1,4 +1,5 @@
 <?php
+
 use App\Http\Controllers\Admin\MovieController as AdminMovieController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\ProfileController;
@@ -11,12 +12,12 @@ use App\Http\Controllers\Admin\PersonController;
 use App\Http\Controllers\RatingController;
 use Inertia\Inertia;
 
-Route::get("/",function(){
-    return Inertia::render('NotFound');
-});
+// Route::get("/",function(){
+//     return Inertia::render('NotFound');
+// });
 // // Public Routes
 // // Public Routes
-// Route::get('/', [HomeController::class, 'index'])->name('home');
+Route::get('/', [HomeController::class, 'index'])->name('home');
 // Route::get('/movies', [MovieController::class, 'index'])->name('movies.index');
 // Route::get('/movies/{slug}', [MovieController::class, 'show'])->name('movies.show');
 // Route::get('/series', [SeriesController::class, 'index'])->name('series.index');
