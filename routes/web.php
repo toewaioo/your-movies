@@ -1,17 +1,14 @@
 <?php
-
 use App\Http\Controllers\Admin\MovieController as AdminMovieController;
 use App\Http\Controllers\SeriesController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\MovieController;
 use App\Http\Controllers\HomeController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\SeriesController as AdminSeriesController;
 use App\Http\Controllers\Admin\GenreController;
 use App\Http\Controllers\Admin\PersonController;
 use App\Http\Controllers\RatingController;
-
 use Inertia\Inertia;
 
 // Public Routes

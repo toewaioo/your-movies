@@ -94,7 +94,7 @@ return [
             'charset' => env('DB_CHARSET', 'utf8'),
             'prefix' => '',
             'prefix_indexes' => true,
-            'search_path' => 'movies',
+            'search_path' => 'public',
             'sslmode' => 'prefer',
         ],
 
