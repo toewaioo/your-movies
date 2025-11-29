@@ -11,6 +11,9 @@ use App\Http\Controllers\Admin\PersonController;
 use App\Http\Controllers\RatingController;
 use Inertia\Inertia;
 
+Route::get("/",function(){
+    return Inertia::render('NotFound');
+});
 // // Public Routes
 // // Public Routes
 // Route::get('/', [HomeController::class, 'index'])->name('home');
